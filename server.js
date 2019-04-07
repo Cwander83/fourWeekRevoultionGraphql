@@ -1,9 +1,9 @@
-//const { ApolloServer } = require('apollo-server');
-//const mongoose = require('mongoose');
-const express = require('express');
-const app = express();
-const port = 3000;
-//require('dotenv').config();
+const { ApolloServer } = require('apollo-server');
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const typeDefs = require('./graphql/typeDefs');
+const resolvers = require('./graphql/resolvers');
 
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -12,9 +12,11 @@ mongoose
   .then(() => console.log('DB connected!'))
   .catch(err => console.error(err));
 
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
 
-app.get('/', (req, res) => res.send('Hello World!'));
-
-app.listen(4000, () => console.log(`Express server running on port 4000`));
-
-//const server = new ApolloServer({})
+server.listen().then(({ url }) => {
+  console.log(`Server listening on ${url}`);
+});
